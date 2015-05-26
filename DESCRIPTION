@@ -1,0 +1,11 @@
+Package: cricketr
+Title: Evaluation of cricket stopping rules
+Version: 0.0.1
+Authors@R: c(person("Ben", "Bolker", email= "bbolker@gmail.com", 
+                   role = c("aut", "cre")),
+           person("Ahsan", "Bhatti", role=c("aut")))
+Description: Constructs and evaluates stopping rules for cricket games
+Depends: R (>= 3.0.2)
+Imports: dplyr,tidyr,ggplot2,lattice,rgl
+License: GPL-3
+LazyData: true
