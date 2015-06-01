@@ -1,0 +1,119 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Evaluating stopping cricket stopping rules}
+\documentclass{article}
+\usepackage[T1]{fontenc}% for correct hyphenation and T1 encoding
+\usepackage[utf8]{inputenc}%
+\usepackage{lmodern}% latin modern font
+\usepackage[american]{babel}  %% for texi2dvi ~ bug
+\usepackage{bm,amsmath,thumbpdf,amsfonts}%,minted}
+
+\title{Evaluating fairness and accuracy of stopping rules for cricket}
+\author{Ahsan Bhatti and Ben Bolker}
+\begin{document}
+
+This is just a shell for right now.  I'm going to fill in my (BMB)
+ideas about what the key points are for an outline \ldots
+
+\section{Introduction}
+
+\begin{itemize}
+\item Cricket is an important game (popular, \$\$\$, etc.)
+\item \ldots but public-domain cricket analytics is relatively limited (show results of Web of Science/Scopus/google scholar search here)
+\item here we are interested in \emph{stopping rules}, i.e. official rules
+used to decide on the outcome of games that are stopped prematurely due
+to weather (or other circumstances? any examples?)
+\item these are hugely important in particular cases (give numbers
+of times they have been invoked), but have not very carefully inspected.
+\item In particular, various methods have been suggested both before
+  and after the advent of D-L [CITE], but they have been justified on
+  general theoretical grounds rather than by actual examination of
+  their performance (bias and variance) in within- and out-of-sample
+  predictions.
+\item We propose a general framework for stopping rules and evaluate
+  the bias and accuracy of D-L and other recently proposed methods.
+\end{itemize}
+
+\section{Methods}
+
+\subsection{Rules of cricket relevant to stoppage}
+
+\emph{Briefly} define the relevant rules of cricket.
+
+\subsection{Resource tables and surfaces}
+
+\begin{itemize}
+\item Define resource surface (expected fraction of resources
+used at a particular $\{o,w\}$ point) and resource table
+(realized mean fraction of runs scored by that point).
+\item Theoretical properties of resource surfaces (monotonicity;
+prediction from underlying smooth curve, even though only defined
+on the lattice). Properties of resource tables (undefined for
+sparsely sampled regions).
+\item Bias-variance tradeoff
+\item Use of estimated resource surface to predict expected number
+of runs and hence to determine a stopping rule
+\item Briefly discuss issues of first vs second innings prediction
+\end{itemize}
+
+\subsection{Models of resource surfaces}
+
+\begin{itemize}
+\item D-L
+\item isotonic regression
+\item Gibbs sampling
+\end{itemize}
+(maybe focus completely on D-L depending on length target)
+
+\subsection{Data}
+
+Available data, discussion of scraping procedure.
+
+\subsection{Model fitting and evaluation}
+
+\begin{itemize}
+\item fitting procedure (weighted least squares)
+\item statistics (kappa, RMSE, variance, bias);
+
+\item cross-validation
+\end{itemize}
+
+\section{Results}
+
+\{Kappa, RMSE, variance, bias \} $\times$
+\{within-sample, between-sample\} $\times$
+method (old D-L, D-L, isotonic, Gibbs) $\times$
+(\{o,w\}-specific, average weighted by stoppage time)
+
+Don't put in everything, just the most useful/interesting subset.
+
+\section{Conclusions}
+
+\begin{itemize}
+\item All methods are pretty good/close together \emph{except}
+old-data D-L
+\item old-data D-L is (fair/unfair/accurate/inaccurate); new-data D-L
+could be (...)
+\item Right now we have a leap in complexity between
+D-L (14 parameters or so) and isotonic/Gibbs (essentially
+1 parameter per element in the resource table, with some
+weak constraints)
+\item Future directions:
+  \begin{itemize}
+  \item add additional covariates (potentially via random effects/mixed models)
+  \item different parametric models (e.g. 2-D monotonic (penalized) splines; experiment with allow wicket-specific $b$ parameters)
+  \end{itemize}
+\end{itemize}
+
+\section{To do}
+
+\begin{itemize}
+\item clean up code etc.
+\item evaluate changes in historic predictions based on updating
+D-L table
+\item show that raw resource table is definitely worse,
+or at least not significantly better, than best methods
+in out-of-sample prediction (otherwise either (1) we've made a mistake
+or (2) the optimal complexity is very high)
+\end{itemize}
+
+\end{document}
