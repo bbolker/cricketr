@@ -10,9 +10,10 @@
 \title{Evaluating fairness and accuracy of stopping rules for cricket}
 \author{Ahsan Bhatti and Ben Bolker}
 \begin{document}
+\maketitle
 
-This is just a shell for right now.  I'm going to fill in my (BMB)
-ideas about what the key points are for an outline \ldots
+\emph{This is just a shell for right now.  I'm going to fill in my (BMB)
+ideas about what the key points are for an outline \ldots}
 
 \section{Introduction}
 
