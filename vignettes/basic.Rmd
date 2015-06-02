@@ -1,0 +1,119 @@
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{lmer Performance Tips}
+%\VignetteDepends{dplyr}
+%\VignetteDepends{bbmle}
+%\VignetteDepends{numDeriv}
+%\VignetteDepends{ggplot2}
+%\VignetteDepends{gridExtra}
+-->
+
+```{r pkgs,message=FALSE}
+library("cricketr")
+library("dplyr")
+library("ggplot2"); theme_set(theme_bw())
+library("bbmle")
+```
+
+**fixme**: real `over50.data` won't be available in full package
+(need to make fake data)
+
+Here we'll use innings-1 data:
+```{r get_data,cache=TRUE}
+dd <- filter(over50.data,innings==1)
+rr <- get.rtab(dd)  ## get resource table from raw data
+nn <- get.ntab(dd)   ## counts per (wicket,over)
+```
+
+Different ways of plotting a raw resource table:
+```{r plots,warning=FALSE}
+## plot(rr0,type="rgl")
+p1 <- plot(rr,type="gg_lines",factor_wicket=TRUE)
+p2 <- plot(rr,type="gg_lines")
+p3 <- plot(rr,type="levelplot")  ## Figure 2.1 from thesis
+grid.arrange(p1,p2,p3,nrow=2)
+```
+Or:
+```{r heatmap}
+plot(rr,type="heatmap")
+```
+
+Compute (and plot) resource surface based on old DL parameters:
+```{r DLtab}
+dl <- DLtab(DL.par,get.tot(dd))  ## compute DL from 
+plot(dl,type="levelplot")
+```
+
+Compute weighted RMSE for DL parameters from resource tab:
+```{r objfun}
+objfun(DL.par,rr,weights=nn,tot.runs=get.tot(dd))
+```
+
+Compare `optim`- and `mle2`-based fits:
+```{r fit1}
+opt1 <- optfun(rr,nn,get.tot(dd))
+objfun <- function (p, restab, weights = 1, tot.runs) { 
+    weights <- rep(weights, length.out = length(restab))
+    predtab <- DLtab(p, tot.runs)
+    s <- !is.na(restab) & !is.na(weights) & weights > 0
+    -sum(weights[s] *
+             dnorm2(restab[s], predtab[s], log = TRUE))/sum(weights[s])
+}
+parnames(objfun) <- names(DL.par)
+m1 <- mle2(minuslogl=objfun,start=DL.par,
+     vecpar=TRUE,
+     data=list(weights=nn,
+               tot.runs=get.tot(dd),
+               restab=rr),
+     method="L-BFGS-B",
+     control=list(parscale=DL.par,maxit=1e5))
+all.equal(coef(m1),opt1$par,tol=5e-4)
+```
+
+Profiling is possible but slow:
+```{r profci,eval=FALSE}
+pp <- profile(m1,debug=TRUE)
+pp.b <- profile(m1,which="b")
+plot(pp.b,show.points=TRUE)
+confint(pp.b)
+```
+
+Compare new estimates (plus Wald CIs) with old D-L parameters:
+```{r plot_comp,echo=FALSE,warning=FALSE}
+cc <- confint(m1,method="quad")
+mtab <- rbind(
+    data.frame(type="newest",
+               par=names(coef(m1)),
+               est=coef(m1),
+               lwr=cc[,1],
+               upr=cc[,2]),
+    data.frame(type="DL",
+               par=names(DL.par),
+               est=DL.par,
+               lwr=NA,
+               upr=NA))
+mtab <- transform(mtab,
+                  ptype=ifelse(par=="b","b",
+                               ifelse(par=="Z0","Z0","F")))
+ggplot(mtab,aes(x=par,y=est,ymin=lwr,ymax=upr,colour=type))+
+    geom_pointrange()+facet_wrap(~ptype,scale="free")+
+        scale_colour_brewer(palette="Set1")
+```  
+
+Plot new D-L
+```{r newDL}
+plot(DLtab(opt1$par,get.tot(dd)),type="gg_lines")
+```
+
+
+## calculate premature stopping times (unfinished)
+
+```{r stoppage_dist}
+dd.last <- over50.data %>% group_by(ID,innings) %>%
+        filter(totruns==last(totruns)) %>%
+            select(ID,wickets,innings,over,totruns) %>%
+                arrange(ID)
+## regular ending if
+##    same numbers of overs in both innings OR
+##    all wickets in inning 2 lost (wickets>=9) OR
+```
