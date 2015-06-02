@@ -25,7 +25,7 @@ plot.restab <- function(x,
     switch(type,
            heatmap=heatmap(x,Rowv=NA,Colv=NA),
            gg_lines=ggplot(tt,
-                        aes(over,runs,
+                        aes(over,rsc_avail_pct,
                             colour=wicket,group=wicket))+
                             geom_line(line_mapping)+
                             labs(x=xlab,y=ylab),
