@@ -1,3 +1,10 @@
+## Paper
+
+* write!
+* AB: import existing text into BMB's outline
+
+## Code
+
 * import scraping code
 * implement general cross-validation stuff
     * kappa, binary-bias measures
