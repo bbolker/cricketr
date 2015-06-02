@@ -5,4 +5,4 @@ basic.html: basic.Rnw
 	Rscript -e "library('rmarkdown'); render('basic.Rmd')"
 
 clean:
-	rm -Rf *.log *.aux *~ *.tpt texput.log
+	rm -Rf *.log *.aux *~ *.tpt texput.log .#*

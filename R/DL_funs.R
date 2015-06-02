@@ -112,6 +112,8 @@ get.ntab <- function(dd) {
 ##' @param x data
 ##' @param mean
 ##' @param log return log-density?
+##' @return probability density or log-density of a Normal distribution with the SD set to the (biased) sample SD
+##' @export
 dnorm2 <- function(x,mean,log=TRUE) {
   sd0 <- sqrt(sum((x-mean)^2,na.rm=TRUE)/length(x))
   dnorm(x,mean,sd=sd0,log=log)
